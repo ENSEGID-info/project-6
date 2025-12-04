@@ -1,0 +1,26 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Nov 26 09:51:23 2025
+
+@author: agath
+"""
+import topotoolbox as topotoolbox
+import matplotlib.pyplot as plt
+
+
+dem = topotoolbox.read_tif('output_SRTMGL3.tif')
+
+fd = topotoolbox.FlowObject(dem)
+
+s = topotoolbox.StreamObject(fd,threshold=0,units='pixels')
+
+plt.subplots()
+
+dem.plot(cmap="terrain")
+
+s.plot(color='r')
+
+fig = plt.figure()
+ax = plt.axes(xlabel="Distance (km)", ylabel="Elevation (m)")
+s.plotdz(dem, ax=ax, dunit='km')
+plt.show()
