@@ -8,19 +8,38 @@ import topotoolbox as topotoolbox
 import matplotlib.pyplot as plt
 
 
-dem = topotoolbox.read_tif('output_SRTMGL3.tif')
+#Création des profils longitudinaux
+def profil_longitudinaux(nom_fichier):
+    '''
+    Fonction créant le profil longitudinal d'un réseau hydrographique
+    
 
-fd = topotoolbox.FlowObject(dem)
+    Parameters
+    ----------
+    nom_fichier : str
+        DESCRIPTION.
 
-s = topotoolbox.StreamObject(fd,threshold=0,units='pixels')
+    Returns
+    -------
+    None.
 
-plt.subplots()
+    '''
+    dem = topotoolbox.read_tif(nom_fichier) #Chargement du fichier
 
-dem.plot(cmap="terrain")
+    fd = topotoolbox.FlowObject(dem)
+    
+    s = topotoolbox.StreamObject(fd,threshold=1,units='pixels')
 
-s.plot(color='r')
-
-fig = plt.figure()
-ax = plt.axes(xlabel="Distance (km)", ylabel="Elevation (m)")
-s.plotdz(dem, ax=ax, dunit='km')
-plt.show()
+    plt.subplots()
+    
+    dem.plot(cmap="terrain")
+    
+    s.plot(color='r')
+    
+    plt.figure()
+    
+    ax = plt.axes(xlabel="Distance (km)", ylabel="Elevation (m)")
+    
+    s.plotdz(dem, ax=ax, dunit='km')
+    
+    plt.show() 
