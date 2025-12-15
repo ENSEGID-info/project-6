@@ -46,6 +46,27 @@ def calcul_normal(F1, F2, F3, couches_F1, couches_F2, couches_F3):
 
 
 def calcul_coefficients_d(normal, F1, couches_F1):
+    """
+    Calcul les différents coefficients d de l'équation d'un 
+        plan du type ax+by+cz+d pour chacun des plan.
+
+    Parameters
+    ----------
+    normal : list de longueur 2
+        Liste des coordonnées du vecteur orthogonal aux plans
+    F1 : np.array de longueur 2
+        Coordonnées de forage 1
+    couches_F1 : list de longueur 3
+        Liste des différentes profondeurs auxquelles les sommets des couches
+        ont été rencontrés par le forage 1
+
+    Returns
+    -------
+    ds : list de longueur le nombre de couches rencontrées par le forage 
+    F1 soit 3
+        Liste des différents coefficients d de l'équation des plans
+
+    """
     ds = []
     for z in couches_F1:
         P = np.array([F1[0], F1[1], z])
@@ -65,12 +86,11 @@ def profondeur(x, y, couche, normal, ds):
         Coordonnée Y choisi par l'utilisateur pour le forage fictif
     couche : TYPE
         DESCRIPTION.
-    normal : TYPE
-        DESCRIPTION.
+    normal : list de longueur 2
+        Liste des coordonnées du vecteur orthogonal aux plans
     ds : list de longueur le nombre de couches rencontrées par le forage 
     F1 soit 3
-        Calcul les différents coefficients d de l'équation d'un 
-        plan du type ax+by+cz+d pour chacun des plans
+       Liste des différents coefficients d de l'équation des plans
 
     """
     a, b, c = normal
@@ -79,8 +99,7 @@ def profondeur(x, y, couche, normal, ds):
     
 
 
-def visualiser_3D(F1, F2, F3, couches_F1, couches_F2, couches_F3, normal, ds, 
-                  x_user, y_user):
+def visualiser_3D(F1, F2, F3, couches_F1, couches_F2, couches_F3, normal, ds,  x_user, y_user):
     """
     Visualistation 3D des points où les forages ont rencontrés une nouvelle 
     couche géologique et des surfaces correspondant au sommet de la couche 
@@ -145,14 +164,11 @@ def visualiser_3D(F1, F2, F3, couches_F1, couches_F2, couches_F3, normal, ds,
         ax.scatter(F2[0], F2[1], couches_F2[i], color=colors[i % len(colors)])
         ax.scatter(F3[0], F3[1], couches_F3[i], color=colors[i % len(colors)])
 
-    # Point choisi par l'utilisateur au niveau de la surface topographique pour
-    réaliser le forage fictif
-    ax.scatter(x_user, y_user, 0, color='black', s=80, label="Point de sondage 
-               fictif")
+    # Point choisi par l'utilisateur au niveau de la surface topographique pour réaliser le forage fictif
+    ax.scatter(x_user, y_user, 0, color='black', s=80, label="Point de sondage fictif")
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
-    ax.set_title("Modélisation 3D des différentes couches rencontrées par les 
-                 forages")
+    ax.set_title("Modélisation 3D des différentes couches rencontrées par les forages")
     ax.legend()
 
     plt.show()
@@ -167,8 +183,7 @@ def main():
     couches_F2 = [80, 100, 130]
     couches_F3 = [60, 85, 115]
 
-    couches_F1, couches_F2, couches_F3 = normaliser_profondeurs(couches_F1, 
-                                                        couches_F2, couches_F3)
+    couches_F1, couches_F2, couches_F3 = normaliser_profondeurs(couches_F1, couches_F2, couches_F3)
 
     normal = calcul_normal(F1, F2, F3, couches_F1, couches_F2, couches_F3)
     ds = calcul_coefficients_d(normal, F1, couches_F1)
@@ -182,8 +197,7 @@ def main():
         z = profondeur(x, y, i, normal, ds)
         print(f"Couche inclinée {i} : z = {z:.2f} m")
 
-    visualiser_3D(F1, F2, F3, couches_F1, couches_F2, couches_F3, normal, ds,
-                  x, y)
+    visualiser_3D(F1, F2, F3, couches_F1, couches_F2, couches_F3, normal, ds, x, y)
 
 
 main()
