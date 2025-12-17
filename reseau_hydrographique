@@ -1,0 +1,42 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Nov 26 09:51:23 2025
+
+@author: agath
+"""
+import topotoolbox as topotoolbox
+import matplotlib.pyplot as plt
+
+
+#Création des profils longitudinaux
+def profil_longitudinaux(nom_fichier):
+    '''
+    Fonction creant le profil longitudinal d'un reseau hydrographique
+    a partir d'un fichier de type tif utilise pour creer un DEM duquel
+    sont extraites les coordonnees du reseau hydrographique    
+
+    Parameters
+    ----------
+    nom_fichier : str
+        Fichier de type .tif
+
+    Returns
+    -------
+    None
+
+    '''
+    dem = topotoolbox.read_tif(nom_fichier) #Chargement du MNT, obtention du DEM
+    fd = topotoolbox.FlowObject(dem) #Calcul direction et accumulation des flux d'eau
+    s = topotoolbox.StreamObject(fd,threshold=10000,units='pixels') #Identification du cours d'eau
+
+    #Creation de la carte avec le trace des cours d'eau
+    plt.subplots()
+    dem.plot(cmap="terrain") #Afficher le DEM
+    s.plot(color='r') #Tracer les cours d'eau en rouge
+    
+    #Creation du profil longitudinal
+    plt.figure()
+    ax = plt.axes(xlabel="Distance (km)", ylabel="Elevation (m)") #Definition des axes
+    s.plotdz(dem, ax=ax, dunit='km')
+    
+    plt.show() #Afficher les graphiques
