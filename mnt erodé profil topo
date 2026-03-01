@@ -1,0 +1,68 @@
+import topotoolbox as ttb
+import rasterio
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+
+# === 1. Charger ton MNT ===
+path = "MNT.tif"
+if not os.path.exists(path):
+    raise FileNotFoundError(f"Fichier introuvable : {path}")
+
+dem = ttb.read_tif(path)
+print("✅ MNT chargé :", dem.shape)
+
+# accéder à l’array numpy des altitudes
+dem_array = dem.z
+
+# définir limites de couleurs globales
+vmin = np.nanmin(dem_array)
+vmax = np.nanmax(dem_array)
+print(f"Échelle couleur : {vmin:.1f} — {vmax:.1f}")
+
+# définir profil : ligne horizontale au milieu
+row = dem_array.shape[0] // 2
+col_start = 0
+col_end = dem_array.shape[1] - 1
+
+# === 2. MNT original (rasterio) avec profil ===
+with rasterio.open(path) as src:
+    arr = src.read(1)
+    plt.figure()
+    plt.imshow(arr, cmap='terrain', vmin=vmin, vmax=vmax)
+    plt.colorbar(label="Altitude (m)")
+    plt.plot([col_start, col_end], [row, row], color='red', linewidth=2, label='Profil topo')
+    plt.title("MNT original avec profil")
+    plt.legend()  # <- ajoute la légende
+    plt.show()
+
+# === 4. MNT érodé avec profil ===
+eroded = dem.erode((15, 15))
+plt.figure()
+eroded.plot()
+plt.imshow(eroded, cmap='terrain', vmin=vmin, vmax=vmax)
+plt.colorbar(label="Altitude (m)")
+plt.plot([col_start, col_end], [row, row], color='red', linewidth=2, label='Profil topo')
+plt.title("MNT érodé avec profil")
+plt.legend()  # <- ajoute la légende
+plt.show()
+# === 5. Différence (TopoToolbox) avec profil ===
+diff = dem - eroded
+diff_array = diff.z
+vmax_diff = np.max(np.abs(diff_array))
+
+
+# === 6. Profils topographiques superposés ===
+profile_dem = dem_array[row, col_start:col_end+1]
+profile_eroded = eroded.z[row, col_start:col_end+1]
+x = np.arange(len(profile_dem))
+
+plt.figure(figsize=(10,5))
+plt.plot(x, profile_dem, label="MNT original", color='blue')
+plt.plot(x, profile_eroded, label="MNT érodé", color='orange', linestyle='--')
+plt.xlabel("Distance (pixels)")
+plt.ylabel("Altitude (m)")
+plt.title("Profil topographique : avant et après érosion")
+plt.legend()
+plt.grid(True)
+plt.show()

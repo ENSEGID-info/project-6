@@ -1,0 +1,15 @@
+import os
+os.system("pip install --upgrade topotoolbox")
+import topotoolbox
+import rasterio
+import matplotlib.pyplot as plt
+
+
+# Charger ton fichier local
+with rasterio.open("MNT.tif") as src:
+    dem = src.read(1)
+    plt.imshow(dem, cmap='terrain')
+    plt.colorbar(label="Altitude (m)")
+    plt.title("Modèle Numérique de Terrain (MNT)")
+    plt.show()
+    
